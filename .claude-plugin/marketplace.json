@@ -1,0 +1,10 @@
+{
+  "name": "obsidian-tools",
+  "owner": { "name": "ERuban" },
+  "plugins": [
+    {
+      "name": "obsidian",
+      "source": "./plugins/obsidian"
+    }
+  ]
+}

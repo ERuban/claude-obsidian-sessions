@@ -1,0 +1,13 @@
+{
+  "name": "obsidian",
+  "description": "Obsidian session tracking: /compress saves the current session as a structured log, /resume loads project context.",
+  "version": "1.0.0",
+  "author": { "name": "ERuban" },
+  "userConfig": {
+    "vault_name": {
+      "type": "string",
+      "title": "Vault name",
+      "description": "Name of your Obsidian vault (the vault folder name as shown in Obsidian). The plugin resolves its full path automatically from Obsidian's vault registry."
+    }
+  }
+}
