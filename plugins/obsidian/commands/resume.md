@@ -62,15 +62,14 @@ Session logs are stored at: `{vault}/Projects/{project-folder}/Sessions/*.md`
    - Extract: date, topic, Quick Reference (keywords, projects, outcome), decisions, pending tasks
 3. If fewer logs exist than requested, note the actual count
 
-## Step 4b: Read Active Kanban Tasks (optional)
+## Step 4b: Read Backlog Tasks (optional)
 
 If the project keeps tracked tasks as individual files, read them too:
-- `{vault}/Projects/{project-folder}/Ready-to-Dev/*.md` — backlog
-- `{vault}/Projects/{project-folder}/InWork/*.md` — currently in progress
+- `{vault}/Projects/{project-folder}/Ready-to-Dev/*.md` — backlog and decisions deferred during other work
 
 For each task file (frontmatter `type: task`), extract: title (H1), priority, severity, ticket, source-session, one-line summary from the `## Why` section. Don't read the full body — just the metadata + first paragraph.
 
-If either folder doesn't exist, skip it silently.
+If the folder doesn't exist, skip it silently (legacy vaults may also have `InWork/` — read it the same way if present).
 
 ## Step 5: Topic Search (if keyword provided)
 
@@ -100,7 +99,6 @@ Format the output as:
 {List with date, topic, outcome — one line each}
 
 ## Pending Tasks
-**In Work:** {tasks from InWork/ if present}
 **Ready to Dev:** {tasks from Ready-to-Dev/ if present}
 **From recent sessions:** {unchecked checkboxes from session logs}
 

@@ -1,7 +1,7 @@
 {
   "name": "obsidian",
   "description": "Obsidian session tracking: /compress saves the current session as a structured log, /resume loads project context.",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "author": { "name": "ERuban" },
   "userConfig": {
     "vault_name": {

@@ -12,12 +12,13 @@ Two slash commands, invoked namespaced after install:
 - You normally configure **one value**: the **vault name**. The plugin resolves the vault's full path automatically from Obsidian's own vault registry (`obsidian.json`), so nothing is hardcoded.
 - Optionally set **`vault_path`** (absolute path to the vault folder) to bypass the registry — for machines without Obsidian installed (headless servers, devcontainers) or to disambiguate same-named vaults. When set, it takes precedence over the registry lookup.
 - **Project detection** is automatic: the commands use the name of your current working directory (`pwd` basename) as the project name, and map it to `Projects/{project}/` inside the vault.
+- **First `/compress` of a project scaffolds it**: `Projects/{project}/Sessions/` + `Ready-to-Dev/` are created automatically, and missing vault-level files (`Templates/*.md`, `Home.md` dashboard) are seeded from the plugin's bundled templates — create-only, existing files are never touched. No separate init step.
 
 ## Non-destructive guarantee
 
 Enabling the plugin does **nothing** to your vault — it only stores the vault name (and the optional path). No files are created, moved, or deleted at install time.
 
-- `/obsidian:compress` at most creates a project's `Sessions/` folder if missing (`mkdir -p`), then creates or merges into a single session log file for the current Claude session. It never overwrites or touches any other note. With `vault_path` set, it will also create that folder itself if it doesn't exist yet — note that Obsidian won't discover such a fresh folder on its own: open it once via "Open folder as vault" to register it.
+- `/obsidian:compress` scaffolds strictly create-only: a new project gets `Sessions/` + `Ready-to-Dev/`, missing vault-level files (`Templates/*.md`, `Home.md`) are seeded from the bundled templates, then it creates or merges into a single session log file for the current Claude session. It never overwrites or touches any existing note. With `vault_path` set, it will also create the vault folder itself if it doesn't exist yet — note that Obsidian won't discover such a fresh folder on its own: open it once via "Open folder as vault" (the `Home.md` dashboard additionally needs the community Dataview plugin).
 - `/obsidian:resume` is **read-only** (with `vault_path` set it reports a missing folder instead of creating it).
 
 Point the config at your **existing** vault — your notes are safe.
@@ -72,8 +73,13 @@ claude-obsidian-sessions/
 │   └── obsidian/
 │       ├── .claude-plugin/
 │       │   └── plugin.json        # plugin: obsidian + userConfig (vault_name)
-│       └── commands/
-│           ├── compress.md        # /obsidian:compress
-│           └── resume.md          # /obsidian:resume
+│       ├── commands/
+│       │   ├── compress.md        # /obsidian:compress
+│       │   └── resume.md          # /obsidian:resume
+│       └── templates/             # seeded into the vault on first /compress (create-only)
+│           ├── Home.md
+│           ├── Project-CLAUDE.md
+│           ├── Session.md
+│           └── Task.md
 └── README.md
 ```
