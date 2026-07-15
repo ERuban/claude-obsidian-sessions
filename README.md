@@ -31,13 +31,22 @@ In Claude Code:
 /reload-plugins
 ```
 
+Or from the terminal, non-interactive (sets the vault name in one go; `--config` also works on an already-installed plugin to set or change the value):
+
+```
+claude plugin marketplace add ERuban/claude-obsidian-sessions
+claude plugin install obsidian@obsidian-tools --config vault_name=<your-vault-name>
+```
+
+Note: there is no `claude plugin config` subcommand — use `install --config` from the terminal, or `/plugin configure obsidian@obsidian-tools` inside Claude Code.
+
 For local testing before pushing:
 
 ```
 /plugin marketplace add /absolute/path/to/claude-obsidian-sessions
 ```
 
-On enable, enter the single `userConfig` value:
+On enable, enter the single `userConfig` value (or pass it via `--config` as above):
 
 - **Vault name** → the name of your Obsidian vault (the vault folder name as shown in Obsidian, e.g. `my-vault`).
 
