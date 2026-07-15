@@ -11,14 +11,16 @@ Save the current conversation as a structured, searchable log in the Obsidian va
 
 ## Step 0: Resolve the vault path
 
-The vault path is NOT configured directly — resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`.
+Two config values control this: `${user_config.vault_path}` (optional override) and `${user_config.vault_name}`.
 
-1. Read Obsidian's config file (pick the one for the current OS):
-   - macOS: `~/Library/Application Support/obsidian/obsidian.json`
-   - Linux: `~/.config/obsidian/obsidian.json`
-   - Windows: `%APPDATA%\obsidian\obsidian.json`
-2. It contains a `vaults` map: `{ "<id>": { "path": "/abs/path/to/vault", ... }, ... }`. Find the entry whose folder name (last path segment) equals `${user_config.vault_name}`. That `path` is the vault base — call it `{vault}`.
-3. If no vault matches, stop and tell the user the vault name wasn't found in Obsidian's registry, and list the vault folder names that ARE present so they can fix the config.
+1. **If `${user_config.vault_path}` is set (non-empty)**, that is the vault base — call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted, so this works on machines without Obsidian. If the folder doesn't exist yet, create it with `mkdir -p` — the user pointed the plugin there deliberately.
+2. **Otherwise** resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`:
+   1. Read Obsidian's config file (pick the one for the current OS):
+      - macOS: `~/Library/Application Support/obsidian/obsidian.json`
+      - Linux: `~/.config/obsidian/obsidian.json`
+      - Windows: `%APPDATA%\obsidian\obsidian.json`
+   2. It contains a `vaults` map: `{ "<id>": { "path": "/abs/path/to/vault", ... }, ... }`. Find the entry whose folder name (last path segment) equals `${user_config.vault_name}`. That `path` is the vault base — call it `{vault}`.
+   3. If no vault matches, stop and tell the user the vault name wasn't found in Obsidian's registry, and list the vault folder names that ARE present so they can fix the config (or set the `vault_path` override).
 
 `{vault}` contains `Projects/` (and possibly `Templates/`). Session logs live under `{vault}/Projects/{project}/Sessions/`.
 

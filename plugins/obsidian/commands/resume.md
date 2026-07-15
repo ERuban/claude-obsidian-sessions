@@ -10,14 +10,16 @@ You are loading context for a new working session. Be thorough but efficient —
 
 ## Step 0: Resolve the vault path
 
-The vault path is NOT configured directly — resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`.
+Two config values control this: `${user_config.vault_path}` (optional override) and `${user_config.vault_name}`.
 
-1. Read Obsidian's config file (pick the one for the current OS):
-   - macOS: `~/Library/Application Support/obsidian/obsidian.json`
-   - Linux: `~/.config/obsidian/obsidian.json`
-   - Windows: `%APPDATA%\obsidian\obsidian.json`
-2. It contains a `vaults` map: `{ "<id>": { "path": "/abs/path/to/vault", ... }, ... }`. Find the entry whose folder name (last path segment) equals `${user_config.vault_name}`. That `path` is the vault base — call it `{vault}`.
-3. If no vault matches, stop and tell the user the vault name wasn't found in Obsidian's registry, and list the vault folder names that ARE present so they can fix the config.
+1. **If `${user_config.vault_path}` is set (non-empty)**, that is the vault base — call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted. This command is read-only: if the folder doesn't exist, stop and tell the user (do NOT create anything).
+2. **Otherwise** resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`:
+   1. Read Obsidian's config file (pick the one for the current OS):
+      - macOS: `~/Library/Application Support/obsidian/obsidian.json`
+      - Linux: `~/.config/obsidian/obsidian.json`
+      - Windows: `%APPDATA%\obsidian\obsidian.json`
+   2. It contains a `vaults` map: `{ "<id>": { "path": "/abs/path/to/vault", ... }, ... }`. Find the entry whose folder name (last path segment) equals `${user_config.vault_name}`. That `path` is the vault base — call it `{vault}`.
+   3. If no vault matches, stop and tell the user the vault name wasn't found in Obsidian's registry, and list the vault folder names that ARE present so they can fix the config (or set the `vault_path` override).
 
 ## Step 1: Parse Arguments
 

@@ -9,15 +9,16 @@ Two slash commands, invoked namespaced after install:
 
 ## How it works
 
-- You only configure **one value**: the **vault name**. The plugin resolves the vault's full path automatically from Obsidian's own vault registry (`obsidian.json`), so nothing is hardcoded.
+- You normally configure **one value**: the **vault name**. The plugin resolves the vault's full path automatically from Obsidian's own vault registry (`obsidian.json`), so nothing is hardcoded.
+- Optionally set **`vault_path`** (absolute path to the vault folder) to bypass the registry — for machines without Obsidian installed (headless servers, devcontainers) or to disambiguate same-named vaults. When set, it takes precedence over the registry lookup.
 - **Project detection** is automatic: the commands use the name of your current working directory (`pwd` basename) as the project name, and map it to `Projects/{project}/` inside the vault.
 
 ## Non-destructive guarantee
 
-Enabling the plugin does **nothing** to your vault — it only stores the vault name. No files are created, moved, or deleted at install time.
+Enabling the plugin does **nothing** to your vault — it only stores the vault name (and the optional path). No files are created, moved, or deleted at install time.
 
-- `/obsidian:compress` at most creates a project's `Sessions/` folder if missing (`mkdir -p`), then creates or merges into a single session log file for the current Claude session. It never overwrites or touches any other note.
-- `/obsidian:resume` is **read-only**.
+- `/obsidian:compress` at most creates a project's `Sessions/` folder if missing (`mkdir -p`), then creates or merges into a single session log file for the current Claude session. It never overwrites or touches any other note. With `vault_path` set, it will also create that folder itself if it doesn't exist yet — note that Obsidian won't discover such a fresh folder on its own: open it once via "Open folder as vault" to register it.
+- `/obsidian:resume` is **read-only** (with `vault_path` set it reports a missing folder instead of creating it).
 
 Point the config at your **existing** vault — your notes are safe.
 
@@ -38,6 +39,8 @@ claude plugin marketplace add ERuban/claude-obsidian-sessions
 claude plugin install obsidian@obsidian-tools --config vault_name=<your-vault-name>
 ```
 
+Add `--config vault_path=/abs/path/to/vault` to skip the Obsidian registry lookup (see "How it works").
+
 Note: there is no `claude plugin config` subcommand — use `install --config` from the terminal, or `/plugin configure obsidian@obsidian-tools` inside Claude Code.
 
 For local testing before pushing:
@@ -46,9 +49,10 @@ For local testing before pushing:
 /plugin marketplace add /absolute/path/to/claude-obsidian-sessions
 ```
 
-On enable, enter the single `userConfig` value (or pass it via `--config` as above):
+On enable, enter the `userConfig` values (or pass them via `--config` as above):
 
-- **Vault name** → the name of your Obsidian vault (the vault folder name as shown in Obsidian, e.g. `my-vault`).
+- **Vault name** (required) → the name of your Obsidian vault (the vault folder name as shown in Obsidian, e.g. `my-vault`).
+- **Vault path** (optional) → absolute path to the vault folder; overrides the registry lookup when set.
 
 The plugin looks this name up in Obsidian's vault registry and resolves the full path itself — you don't type any path.
 
