@@ -1,5 +1,6 @@
 {
   "name": "obsidian-tools",
+  "description": "Obsidian session tracking for Claude Code: structured session logs (/compress) and project context loading (/resume).",
   "owner": { "name": "ERuban" },
   "plugins": [
     {

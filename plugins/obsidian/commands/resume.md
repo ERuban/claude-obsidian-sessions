@@ -1,6 +1,6 @@
 ---
 description: Load context from Obsidian vault + recent session logs for current project
-model: sonnet
+model: haiku
 allowed-tools: Read, Glob, Bash, Grep
 ---
 
@@ -12,7 +12,7 @@ You are loading context for a new working session. Be thorough but efficient —
 
 Two config values control this: `${user_config.vault_path}` (optional override) and `${user_config.vault_name}`.
 
-1. **If `${user_config.vault_path}` is set (non-empty)**, that is the vault base — call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted. This command is read-only: if the folder doesn't exist, stop and tell the user (do NOT create anything).
+1. **If `${user_config.vault_path}` is set** — non-empty AND not a literal unexpanded placeholder (when the option is not configured, it renders as the raw `${user_config...}` text: treat that as NOT set, never as a path) — that value is the vault base, call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted. This command is read-only: if the folder doesn't exist, stop and tell the user (do NOT create anything).
 2. **Otherwise** resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`:
    1. Read Obsidian's config file (pick the one for the current OS):
       - macOS: `~/Library/Application Support/obsidian/obsidian.json`

@@ -13,7 +13,7 @@ Save the current conversation as a structured, searchable log in the Obsidian va
 
 Two config values control this: `${user_config.vault_path}` (optional override) and `${user_config.vault_name}`.
 
-1. **If `${user_config.vault_path}` is set (non-empty)**, that is the vault base — call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted, so this works on machines without Obsidian. If the folder doesn't exist yet, create it with `mkdir -p` — the user pointed the plugin there deliberately.
+1. **If `${user_config.vault_path}` is set** — non-empty AND not a literal unexpanded placeholder (when the option is not configured, it renders as the raw `${user_config...}` text: treat that as NOT set, never as a path) — that value is the vault base, call it `{vault}` (expand a leading `~`). Obsidian's registry is NOT consulted, so this works on machines without Obsidian. If the folder doesn't exist yet, create it with `mkdir -p` — the user pointed the plugin there deliberately.
 2. **Otherwise** resolve it from Obsidian's vault registry by matching the vault name `${user_config.vault_name}`:
    1. Read Obsidian's config file (pick the one for the current OS):
       - macOS: `~/Library/Application Support/obsidian/obsidian.json`
