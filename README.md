@@ -11,8 +11,10 @@ Two slash commands, invoked namespaced after install:
 
 - You normally configure **one value**: the **vault name**. The plugin resolves the vault's full path automatically from Obsidian's own vault registry (`obsidian.json`), so nothing is hardcoded.
 - Optionally set **`vault_path`** (absolute path to the vault folder) to bypass the registry — for machines without Obsidian installed (headless servers, devcontainers) or to disambiguate same-named vaults. When set, it takes precedence over the registry lookup.
-- **Project detection** is automatic: the commands use the name of your current working directory (`pwd` basename) as the project name, and map it to `Projects/{project}/` inside the vault.
+- **Project detection** is automatic: the project name is the git repository root folder name (via `git rev-parse --git-common-dir`, so subfolders and git worktrees map to the same project), falling back to the current directory name outside git. It maps to `Projects/{project}/` inside the vault.
 - **First `/compress` of a project scaffolds it**: `Projects/{project}/Sessions/` + `Ready-to-Dev/` are created automatically, and missing vault-level files (`Templates/*.md`, `Home.md` dashboard) are seeded from the plugin's bundled templates — create-only, existing files are never touched. No separate init step.
+- **One log per piece of work, not per conversation**: when a new conversation continues an existing topic (same ticket / topic), `/compress` offers to append a `## Follow-up — {date}` section to the existing log instead of creating a new file, and bumps its `updated:` date. `/resume` and the `Home.md` dashboard order sessions by `updated`, so a log started in May and continued in September shows up as September.
+- **Frontmatter is the dashboard's data**: `status` (`completed` / `in-progress`), `outcome` (one sentence) and lowercase `tags` are written to frontmatter so Dataview can show and filter them. `/resume` skips tasks with `status: done` / `dismissed` and flags a last session left `in-progress`.
 
 ## Non-destructive guarantee
 
@@ -22,6 +24,8 @@ Enabling the plugin does **nothing** to your vault — it only stores the vault 
 - `/obsidian:resume` is **read-only** (with `vault_path` set it reports a missing folder instead of creating it).
 
 Point the config at your **existing** vault — your notes are safe.
+
+Because seeding is create-only, an existing `Home.md` is not upgraded when the bundled template changes. To get the current dashboard (v1.3.0: `status`/`outcome` columns, ordering by `updated`), copy `plugins/obsidian/templates/Home.md` over yours by hand.
 
 ## Install
 
@@ -78,7 +82,6 @@ claude-obsidian-sessions/
 │       │   └── resume.md          # /obsidian:resume
 │       └── templates/             # seeded into the vault on first /compress (create-only)
 │           ├── Home.md
-│           ├── Project-CLAUDE.md
 │           ├── Session.md
 │           └── Task.md
 └── README.md
