@@ -5,15 +5,7 @@ type: home
 # Claude Work Vault
 
 ## Quick Access
-- [[Templates/]] — Templates (Session, Task, Project-CLAUDE)
-
-## Projects
-```dataview
-TABLE status, updated
-FROM "Projects"
-WHERE type = "project-memory"
-SORT updated DESC
-```
+- [[Templates/]] — Templates (Session, Task)
 
 ## Ready to Dev (backlog & deferred decisions)
 Tasks live as individual `.md` files in `Projects/{name}/Ready-to-Dev/`. Use `Templates/Task.md`.
@@ -21,16 +13,16 @@ Tasks live as individual `.md` files in `Projects/{name}/Ready-to-Dev/`. Use `Te
 ```dataview
 TABLE project, priority, severity, ticket
 FROM "Projects"
-WHERE type = "task" AND status = "ready-to-dev"
+WHERE type = "task" AND (status = "ready-to-dev" OR status = "in-progress")
 SORT priority DESC, created ASC
 ```
 
 ## Recent Sessions
 ```dataview
-TABLE project, topic, outcome
+TABLE project, topic, status, outcome
 FROM "Projects"
 WHERE type = "session"
-SORT date DESC
+SORT default(updated, date) DESC
 LIMIT 10
 ```
 

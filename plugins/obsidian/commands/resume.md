@@ -35,9 +35,9 @@ Parse them:
 
 Determine which project you're working in:
 
-1. Check current working directory (`pwd`)
-2. Project name = last path segment of the current directory
-   - Example: working in `/somewhere/my-project` → project = `my-project`
+1. Run `git rev-parse --path-format=absolute --git-common-dir 2>/dev/null`
+2. If it prints a path, project name = name of that path's parent folder (the repository root — the same from any subfolder or git worktree). If it prints nothing (not a git repo), project name = last path segment of `pwd`
+   - Example: `/somewhere/my-project/src`, or a worktree of `my-project` → project = `my-project`
 3. Map to vault project folder. The vault base is `{vault}` (resolved in Step 0)
    - Project folder pattern: `Projects/{project-short-name}/`
    - Use Glob to find the matching project folder: `Projects/*/`
@@ -56,20 +56,25 @@ Read the first one found. This is the persistent memory — architecture decisio
 
 Session logs are stored at: `{vault}/Projects/{project-folder}/Sessions/*.md`
 
-1. List all session log files, sorted by name (newest first — filenames start with date)
+1. Order logs by last activity, newest first: the `updated:` frontmatter date, falling back to the date in the filename for older logs without it. One command:
+   ```bash
+   for f in "{vault}/Projects/{project-folder}/Sessions/"*.md; do u=$(grep -m1 '^updated:' "$f" | awk '{print $2}'); echo "${u:-$(basename "$f" | cut -c1-10)} $f"; done | sort -r | head -n {N}
+   ```
+   (A log created in May and continued in September counts as September.)
 2. For each of the last N sessions:
    - Read everything BEFORE `## Raw Session Log` marker (NEVER read past this marker — it's huge and wastes tokens)
-   - Extract: date, topic, Quick Reference (keywords, projects, outcome), decisions, pending tasks
+   - Extract: date, updated, status, topic, Quick Reference (tags, outcome), decisions, pending tasks, and the latest `## Follow-up — …` section if any
 3. If fewer logs exist than requested, note the actual count
+4. If the most recent log has `status: in-progress`, the previous session ended mid-work — surface it prominently in the report
 
 ## Step 4b: Read Backlog Tasks (optional)
 
 If the project keeps tracked tasks as individual files, read them too:
 - `{vault}/Projects/{project-folder}/Ready-to-Dev/*.md` — backlog and decisions deferred during other work
 
-For each task file (frontmatter `type: task`), extract: title (H1), priority, severity, ticket, source-session, one-line summary from the `## Why` section. Don't read the full body — just the metadata + first paragraph.
+For each task file (frontmatter `type: task`) whose `status` is `ready-to-dev`, `in-progress` or missing, extract: title (H1), priority, severity, ticket, source-session, one-line summary from the `## Why` section. Don't read the full body — just the metadata + first paragraph. Skip files with `status: done` or `status: dismissed` — they are history, not backlog.
 
-If the folder doesn't exist, skip it silently (legacy vaults may also have `InWork/` — read it the same way if present).
+If the folder doesn't exist, skip it silently (legacy vaults may also have `InWork/` — read it the same way if present; ignore `Done/`).
 
 ## Step 5: Topic Search (if keyword provided)
 
@@ -92,7 +97,7 @@ Format the output as:
 {From CLAUDE.md — current phase, active work, blockers}
 
 ## Most Recent Session
-**{date} — {topic}**
+**{date} — {topic}** {"(updated {updated})" when it differs from date} {"⚠ LEFT IN PROGRESS" when status is in-progress}
 {Summary, decisions, outcome}
 
 ## Previous Sessions
